@@ -14,8 +14,8 @@
 //import org.leo.server.panama.core.connector.impl.TCPResponse;
 //import org.leo.server.panama.core.method.RequestMethod;
 //import org.leo.server.panama.spring.function.annotation.RequestFunction;
-//import org.leo.server.panama.spring.function.service.TCPRequestService;
-//import org.leo.server.panama.vpn.ShadowSocksConfiguration;
+//import org.leo.server.panama.spring.function.server.TCPRequestService;
+//import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 //import org.leo.server.panama.vpn.constant.VPNConstant;
 //import org.leo.server.panama.vpn.security.wrapper.Wrapper;
 //import org.leo.server.panama.vpn.security.wrapper.WrapperFactory;

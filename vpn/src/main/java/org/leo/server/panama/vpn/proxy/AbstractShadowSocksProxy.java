@@ -3,6 +3,7 @@ package org.leo.server.panama.vpn.proxy;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.client.Client;
@@ -81,11 +82,15 @@ public abstract class AbstractShadowSocksProxy implements ClientResponseDelegate
     protected void sendRequest2Target(byte []data, String target, int port) {
         if (null == redirectClient) {
             log.info(" proxy ----------------> target " + target + ":" + port);
-            redirectClient = new TCPClient(eventLoopGroup, this);
+            redirectClient = createClient(eventLoopGroup);
             redirectClient.connect(DNSResolver.resolver(target, port));
         }
 
         redirectClient.send(data, 0);
         log.info(" proxy ----------------> target " + data.length + " byte");
+    }
+
+    protected Client createClient(EventLoopGroup eventLoopGroup) {
+        return new TCPClient(eventLoopGroup, this);
     }
 }

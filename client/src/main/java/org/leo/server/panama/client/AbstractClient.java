@@ -72,4 +72,8 @@ public abstract class AbstractClient implements Client {
             workGroup = null;
         }
     }
+
+    public ChannelFuture getConnectFuture() {
+        return connectFuture;
+    }
 }

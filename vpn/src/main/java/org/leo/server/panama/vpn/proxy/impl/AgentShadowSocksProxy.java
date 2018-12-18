@@ -4,8 +4,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.log4j.Logger;
-import org.leo.server.panama.core.connector.impl.TCPRequest;
-import org.leo.server.panama.vpn.ShadowSocksConfiguration;
+import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.proxy.AbstractShadowSocksProxy;
 import org.leo.server.panama.vpn.security.wrapper.Wrapper;
 import org.leo.server.panama.vpn.security.wrapper.WrapperFactory;
@@ -23,7 +22,7 @@ public class AgentShadowSocksProxy extends AbstractShadowSocksProxy {
 
     public AgentShadowSocksProxy(Channel clientChannel, Callback finish, String encryption, String password, NioEventLoopGroup eventLoopGroup, ShadowsocksRequestResolver requestResolver) {
         super(clientChannel, finish, encryption, password, eventLoopGroup, requestResolver);
-        agentWrapper = WrapperFactory.getInstance(ShadowSocksConfiguration.getProxyType(), ShadowSocksConfiguration.getProxyPwd(), "encrypt");
+        agentWrapper = WrapperFactory.getInstance(ShadowSocksConfiguration.getProxyType(), ShadowSocksConfiguration.getProxyPassword(), "encrypt");
     }
 
     @Override
@@ -40,8 +39,7 @@ public class AgentShadowSocksProxy extends AbstractShadowSocksProxy {
     }
 
     @Override
-    public void doProxy(TCPRequest request) {
-        byte[] data = request.getData();
+    public void doProxy(byte []data) {
         log.info("client ---------------->  proxy " + data.length + " byte");
 
         byte []decryptData = null;

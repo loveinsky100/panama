@@ -24,7 +24,7 @@ public class AgentShadowSocksRequestHandler implements RequestHandler<TCPRequest
             channel2ProxyCache.put(channel, proxy);
         }
 
-        proxy.doProxy(request);
+        proxy.doProxy(request.getData());
     }
 
 }

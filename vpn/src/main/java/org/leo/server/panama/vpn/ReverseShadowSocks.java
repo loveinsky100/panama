@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
  * @author xuyangze
  * @date 2018/10/9 下午1:16
  */
-public class ShadowSocks {
+public class ReverseShadowSocks {
     public static void main(String []args) throws IOException {
         ShadowSocksConfiguration.setType("aes-256-cfb");
         ShadowSocksConfiguration.setPassword("1234567890");
@@ -24,10 +24,10 @@ public class ShadowSocks {
 //        ShadowSocksConfiguration.setProxyType("aes-256-cfb");
 //        ShadowSocksConfiguration.setProxyPassword("123456");
 //        ShadowSocksConfiguration.setProxyPort(9898);
-        ShadowSocksConfiguration.setReverse(true);
+//        ShadowSocksConfiguration.setReverse(true);
 
-//        ShadowSocksConfiguration.setReverseHost("127.0.0.1");
-//        ShadowSocksConfiguration.setReversePort(8080);
+        ShadowSocksConfiguration.setReverseHost("127.0.0.1");
+        ShadowSocksConfiguration.setReversePort(8080);
 
         Server server;
         if (null != ShadowSocksConfiguration.getReverseHost()) {
