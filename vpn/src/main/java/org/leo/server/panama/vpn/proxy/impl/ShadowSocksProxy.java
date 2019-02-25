@@ -3,7 +3,6 @@ package org.leo.server.panama.vpn.proxy.impl;
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.log4j.Logger;
-import org.leo.server.panama.core.connector.impl.TCPRequest;
 import org.leo.server.panama.vpn.proxy.AbstractShadowSocksProxy;
 import org.leo.server.panama.vpn.shadowsocks.ShadowSocksRequest;
 import org.leo.server.panama.vpn.shadowsocks.ShadowsocksRequestResolver;
@@ -23,8 +22,7 @@ public class ShadowSocksProxy extends AbstractShadowSocksProxy {
     }
 
     @Override
-    public void doProxy(TCPRequest request) {
-        byte[] data = request.getData();
+    public void doProxy(byte []data) {
         String target = null;
         int port = 0;
 

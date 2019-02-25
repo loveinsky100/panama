@@ -1,4 +1,4 @@
-package org.leo.server.panama.vpn;
+package org.leo.server.panama.vpn.configuration;
 
 import java.util.Objects;
 
@@ -23,7 +23,16 @@ public class ShadowSocksConfiguration {
     private static String proxyType;
 
     // 代理服务器加密密码
-    private static String proxyPwd;
+    private static String proxyPassword;
+
+    // 是否创建反向代理服务器
+    private static boolean reverse;
+
+    // 反向代理服务器地址
+    private static String reverseHost;
+
+    // 反向代理服务器端口
+    private static int reversePort;
 
     public static String getType() {
         if (null == type) {
@@ -42,6 +51,30 @@ public class ShadowSocksConfiguration {
         }
 
         return password;
+    }
+
+    public static boolean isReverse() {
+        return reverse;
+    }
+
+    public static void setReverse(boolean reverse) {
+        ShadowSocksConfiguration.reverse = reverse;
+    }
+
+    public static String getReverseHost() {
+        return reverseHost;
+    }
+
+    public static void setReverseHost(String reverseHost) {
+        ShadowSocksConfiguration.reverseHost = reverseHost;
+    }
+
+    public static int getReversePort() {
+        return reversePort;
+    }
+
+    public static void setReversePort(int reversePort) {
+        ShadowSocksConfiguration.reversePort = reversePort;
     }
 
     public static void setPassword(String password) {
@@ -64,12 +97,12 @@ public class ShadowSocksConfiguration {
         ShadowSocksConfiguration.proxyType = proxyType;
     }
 
-    public static String getProxyPwd() {
-        return proxyPwd;
+    public static String getProxyPassword() {
+        return proxyPassword;
     }
 
-    public static void setProxyPwd(String proxyPwd) {
-        ShadowSocksConfiguration.proxyPwd = proxyPwd;
+    public static void setProxyPassword(String proxyPassword) {
+        ShadowSocksConfiguration.proxyPassword = proxyPassword;
     }
 
     public static int getProxyPort() {
@@ -81,10 +114,10 @@ public class ShadowSocksConfiguration {
     }
 
     public static boolean isProxyEnable() {
-        return null != proxy && null != proxyType && null != proxyPwd;
+        return null != proxy && null != proxyType && null != proxyPassword;
     }
 
     public static boolean isProxyEqualsCurrent() {
-        return Objects.equals(proxyType, type) && Objects.equals(proxyPwd, password);
+        return Objects.equals(proxyType, type) && Objects.equals(proxyPassword, password);
     }
 }

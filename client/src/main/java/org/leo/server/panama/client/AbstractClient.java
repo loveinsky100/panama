@@ -39,6 +39,7 @@ public abstract class AbstractClient implements Client {
             });
         } catch (Exception e) {
             e.printStackTrace();
+            close = true;
             return null;
         }
 
@@ -61,6 +62,10 @@ public abstract class AbstractClient implements Client {
         return close;
     }
 
+    public void setClose(boolean close) {
+        this.close = close;
+    }
+
     @Override
     public void close() {
         try {
@@ -71,5 +76,9 @@ public abstract class AbstractClient implements Client {
             close = true;
             workGroup = null;
         }
+    }
+
+    public ChannelFuture getConnectFuture() {
+        return connectFuture;
     }
 }

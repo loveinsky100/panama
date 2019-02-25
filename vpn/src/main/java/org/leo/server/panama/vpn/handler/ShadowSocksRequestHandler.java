@@ -12,7 +12,7 @@
 //import org.leo.server.panama.core.connector.impl.TCPRequest;
 //import org.leo.server.panama.core.connector.impl.TCPResponse;
 //import org.leo.server.panama.core.handler.RequestHandler;
-//import org.leo.server.panama.vpn.ShadowSocksConfiguration;
+//import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 //import org.leo.server.panama.vpn.constant.VPNConstant;
 //import org.leo.server.panama.vpn.security.wrapper.Wrapper;
 //import org.leo.server.panama.vpn.security.wrapper.WrapperFactory;

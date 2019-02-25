@@ -2,13 +2,16 @@ package org.leo.server.panama.vpn.proxy.factory;
 
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
-import org.leo.server.panama.vpn.ShadowSocksConfiguration;
+import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.constant.VPNConstant;
 import org.leo.server.panama.vpn.proxy.TCPProxy;
 import org.leo.server.panama.vpn.proxy.impl.AgentShadowSocksProxy;
+import org.leo.server.panama.vpn.proxy.impl.Redirect2ReverseShadowSocksProxy;
+import org.leo.server.panama.vpn.proxy.impl.ReverseShadowSocksProxy;
+import org.leo.server.panama.vpn.proxy.impl.ShadowSocksProxy;
+import org.leo.server.panama.vpn.reverse.core.ReverseCoreServer;
 import org.leo.server.panama.vpn.shadowsocks.ShadowsocksRequestResolver;
 import org.leo.server.panama.vpn.util.Callback;
-import org.leo.server.panama.vpn.proxy.impl.ShadowSocksProxy;
 
 /**
  * @author xuyangze
@@ -21,7 +24,37 @@ public class ShadowSocksProxyFactory {
     // 代理服务请求返回数据解析
     private static ShadowsocksRequestResolver requestResolver = new ShadowsocksRequestResolver();
 
+    // 创建反向代理服务器
+    private static ReverseCoreServer reverseCoreServer = new ReverseCoreServer(ShadowSocksConfiguration.getReversePort());
+
+    public static void startReverseServer() {
+        new Thread(() -> {
+            reverseCoreServer.start(100);
+        }).start();
+    }
+
     public static TCPProxy create(Channel channel, Callback callback) {
+        if (ShadowSocksConfiguration.isReverse()) {
+            return new Redirect2ReverseShadowSocksProxy(
+                    channel,
+                    callback,
+                    ShadowSocksConfiguration.getType(),
+                    ShadowSocksConfiguration.getPassword(),
+                    eventLoopGroup,
+                    requestResolver,
+                    reverseCoreServer);
+        }
+
+        if (null != ShadowSocksConfiguration.getReverseHost()) {
+            return new ReverseShadowSocksProxy(
+                    channel,
+                    callback,
+                    ShadowSocksConfiguration.getType(),
+                    ShadowSocksConfiguration.getPassword(),
+                    eventLoopGroup,
+                    requestResolver);
+        }
+
         if (ShadowSocksConfiguration.isProxyEnable()) {
             return new AgentShadowSocksProxy(
                     channel,
