@@ -17,17 +17,16 @@ import org.leo.server.panama.vpn.util.Callback;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * 反向代理客户端，发送请求到代理端，代理端返回数据
- * 服务端向被代理端进行长链接，服务端维持和代理端的连接
- * 代理端收到客户端请求，通过长链接发送请求到服务端
- * 服务端转发请求到服务端的ss端口，请求返回后返回给代理端
+ * 反向代理服务端，实际上是作为客户端存在内网服务器中
+ * 想代理服务器发起一条长连接，接收代码服务器的请求
+ * 收到代理服务器请求后发起网络请求，然后回调给代理服务器
+ * 由于复用一条连接，所有的请求带上tag标记，判断是否属于同一个请求
  * @author xuyangze
  * @date 2018/11/21 3:17 PM
  */
@@ -50,7 +49,7 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
             return;
         }
 
-        // 生成flag
+        // 生成tag
         byte []tagByte = NumberUtils.intToByteArray(tag);
 
         tag2ConsumerMap.put(tag, callback);

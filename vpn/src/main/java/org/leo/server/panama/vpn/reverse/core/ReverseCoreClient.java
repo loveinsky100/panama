@@ -1,7 +1,6 @@
 package org.leo.server.panama.vpn.reverse.core;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.client.Client;
@@ -11,6 +10,7 @@ import org.leo.server.panama.client.tcp.TCPClient;
 import org.leo.server.panama.core.connector.impl.TCPResponse;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -27,6 +27,8 @@ public class ReverseCoreClient extends TCPClient implements ClientResponseDelega
     private InetSocketAddress address;
     private Consumer<byte []> consumer;
 
+    private EventLoop scheduleEventLoop = new DefaultEventLoop();
+
     public ReverseCoreClient(InetSocketAddress address, Consumer<byte []> consumer) {
         super(new NioEventLoopGroup(1), null);
         this.address = address;
@@ -40,7 +42,7 @@ public class ReverseCoreClient extends TCPClient implements ClientResponseDelega
     @Override
     public Client connect(InetSocketAddress inetSocketAddress) {
         log.info("ReverseCoreClient try connect to server: " + address.getHostName());
-        return super.connect(inetSocketAddress);
+        return tryConnect();
     }
 
     @Override
@@ -50,12 +52,12 @@ public class ReverseCoreClient extends TCPClient implements ClientResponseDelega
 
     @Override
     public boolean shouldDoPerResponse() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean shouldDoCompleteResponse() {
-        return false;
+        return true;
     }
 
     @Override
@@ -65,16 +67,30 @@ public class ReverseCoreClient extends TCPClient implements ClientResponseDelega
 
     @Override
     public void doCompleteResponse(Client client, TCPResponse response) {
-
-    }
-
-    @Override
-    public void doPerResponse(Client client, TCPResponse response) {
         consumer.accept(response.getData());
     }
 
     @Override
+    public void doPerResponse(Client client, TCPResponse response) {
+
+    }
+
+    @Override
     public void onConnectClosed(Client client) {
-        this.connect(address);
+        log.info("connect closed to server: " + address.getHostName());
+        setClose(true);
+        tryConnect();
+    }
+
+    private Client tryConnect() {
+        Client client = super.connect(address);
+        if (null != client) {
+            log.info("connect success to server: " + address.getHostName());
+        } else {
+            log.info("connect failed to server: " + address.getHostName());
+            scheduleEventLoop.schedule(() -> this.tryConnect(), 3, TimeUnit.SECONDS);
+        }
+
+        return client;
     }
 }

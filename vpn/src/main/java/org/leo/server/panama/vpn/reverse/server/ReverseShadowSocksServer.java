@@ -66,9 +66,7 @@ public class ReverseShadowSocksServer implements Server {
 
             if (proxy instanceof ReverseShadowSocksProxy) {
                 ReverseShadowSocksProxy reverseShadowSocksProxy = (ReverseShadowSocksProxy)proxy;
-                reverseShadowSocksProxy.setAppendTagFunc(response -> {
-                    return Unpooled.wrappedBuffer(NumberUtils.intToByteArray(tag), data);
-                });
+                reverseShadowSocksProxy.setAppendTagFunc(response -> Unpooled.wrappedBuffer(NumberUtils.intToByteArray(tag), response));
             }
 
             tag2Proxy.put(tag, proxy);

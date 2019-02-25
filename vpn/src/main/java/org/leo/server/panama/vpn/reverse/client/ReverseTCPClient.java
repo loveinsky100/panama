@@ -46,6 +46,11 @@ public class ReverseTCPClient implements Client {
     }
 
     @Override
+    public void setClose(boolean close) {
+        this.closed = close;
+    }
+
+    @Override
     public void close() {
         this.closed = true;
     }

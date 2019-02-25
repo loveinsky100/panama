@@ -6,9 +6,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse implements Response {
+    /**
+     * 响应信息
+     */
     private String message;
+
+    /**
+     * 请求的header信息
+     */
     private Map<String, Object> header;
+
+    /**
+     * 是否是压缩格式
+     */
     private boolean zip;
+
+    /**
+     * 是否保持长连接
+     */
     private boolean alive;
 
     public HttpResponse() {

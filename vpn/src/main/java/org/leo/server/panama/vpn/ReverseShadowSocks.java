@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
+ * 反向代理ss，部署在内网服务器
  * @author xuyangze
  * @date 2018/10/9 下午1:16
  */

@@ -37,8 +37,9 @@ public class TCPClientHandler extends ChannelInboundHandlerAdapter {
             if (null == completeData || completeData.length == 0) {
                 completeData = readData;
             } else {
+                int start = completeData.length;
                 completeData = Arrays.copyOf(completeData, completeData.length + readData.length);
-                System.arraycopy(readData, 0, completeData, completeData.length, readData.length);
+                System.arraycopy(readData, 0, completeData, start, readData.length);
             }
         }
 
@@ -76,8 +77,8 @@ public class TCPClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        clientResponseDelegate.onConnectClosed(tcpClient);
         super.channelInactive(ctx);
+        clientResponseDelegate.onConnectClosed(tcpClient);
     }
 
     protected byte[] read(ChannelHandlerContext ctx, Object msg) {

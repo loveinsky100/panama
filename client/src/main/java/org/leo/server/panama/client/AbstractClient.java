@@ -39,6 +39,7 @@ public abstract class AbstractClient implements Client {
             });
         } catch (Exception e) {
             e.printStackTrace();
+            close = true;
             return null;
         }
 
@@ -59,6 +60,10 @@ public abstract class AbstractClient implements Client {
     @Override
     public boolean isClose() {
         return close;
+    }
+
+    public void setClose(boolean close) {
+        this.close = close;
     }
 
     @Override

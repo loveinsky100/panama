@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
+ * 部署在外网服务器
  * @author xuyangze
  * @date 2018/10/9 下午1:16
  */
