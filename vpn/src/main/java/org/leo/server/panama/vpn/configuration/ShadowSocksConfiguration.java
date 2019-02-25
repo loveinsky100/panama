@@ -25,13 +25,13 @@ public class ShadowSocksConfiguration {
     // 代理服务器加密密码
     private static String proxyPassword;
 
-    //
+    // 是否创建反向代理服务器
     private static boolean reverse;
 
-    //
+    // 反向代理服务器地址
     private static String reverseHost;
 
-    //
+    // 反向代理服务器端口
     private static int reversePort;
 
     public static String getType() {

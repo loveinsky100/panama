@@ -24,10 +24,10 @@ public class ShadowSocksProxyFactory {
     // 代理服务请求返回数据解析
     private static ShadowsocksRequestResolver requestResolver = new ShadowsocksRequestResolver();
 
-    //
-    private static ReverseCoreServer reverseCoreServer = new ReverseCoreServer(8080);
+    // 创建反向代理服务器
+    private static ReverseCoreServer reverseCoreServer = new ReverseCoreServer(ShadowSocksConfiguration.getReversePort());
 
-    public static void start() {
+    public static void startReverseServer() {
         new Thread(() -> {
             reverseCoreServer.start(100);
         }).start();
