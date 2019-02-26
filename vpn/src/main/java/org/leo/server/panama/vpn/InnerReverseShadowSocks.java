@@ -18,8 +18,9 @@ public class InnerReverseShadowSocks {
     public static void main(String []args) throws IOException {
         ShadowSocksConfiguration.setType("aes-256-cfb");
         ShadowSocksConfiguration.setPassword("1234567890");
+//        ShadowSocksConfiguration.setReverseHost("35.229.192.233");
         ShadowSocksConfiguration.setReverseHost("127.0.0.1");
-        ShadowSocksConfiguration.setReversePort(8080);
+        ShadowSocksConfiguration.setReversePort(8786);
 
         Server server = new ReverseShadowSocksServer(ShadowSocksConfiguration.getReverseHost(), ShadowSocksConfiguration.getReversePort());
         System.out.println(server.getClass().getSimpleName() + " start");

@@ -37,13 +37,6 @@ public class Redirect2ReverseShadowSocksProxy extends AbstractShadowSocksProxy {
     }
 
     @Override
-    public void doCompleteResponse(Client client, TCPResponse response) {
-        // target -> proxy -> client
-        log.info(" proxy <---------------- target " + response.getData().length + " byte");
-        send2Client(response.getData());
-    }
-
-    @Override
     public boolean shouldDoPerResponse() {
         return false;
     }

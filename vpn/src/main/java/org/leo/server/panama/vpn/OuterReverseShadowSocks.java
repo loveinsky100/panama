@@ -22,9 +22,9 @@ public class OuterReverseShadowSocks {
         ShadowSocksConfiguration.setPassword("1234567890");
 
         ShadowSocksConfiguration.setReverse(true);
-        ShadowSocksConfiguration.setReversePort(8080);
+        ShadowSocksConfiguration.setReversePort(8786);
 
-        Server server = new TCPServer(9898, new AgentShadowSocksRequestHandler());
+        Server server = new TCPServer(8787, new AgentShadowSocksRequestHandler());
         ShadowSocksProxyFactory.startReverseServer();
 
         System.out.println(server.getClass().getSimpleName() + " start");

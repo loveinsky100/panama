@@ -80,7 +80,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.leo.server.panama.vpn.OuterReverseShadowSocks</mainClass>
+                            <mainClass>org.leo.server.panama.vpn.InnerReverseShadowSocks</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
