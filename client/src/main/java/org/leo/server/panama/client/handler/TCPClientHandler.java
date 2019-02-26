@@ -73,6 +73,7 @@ public class TCPClientHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
         ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         super.exceptionCaught(ctx, cause);
+        clientResponseDelegate.onConnectClosed(tcpClient);
     }
 
     @Override
