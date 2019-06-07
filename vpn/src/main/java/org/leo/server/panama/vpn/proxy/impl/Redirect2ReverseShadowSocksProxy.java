@@ -1,9 +1,11 @@
 package org.leo.server.panama.vpn.proxy.impl;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.client.Client;
 import org.leo.server.panama.core.connector.impl.TCPResponse;
@@ -49,7 +51,9 @@ public class Redirect2ReverseShadowSocksProxy extends AbstractShadowSocksProxy {
     @Override
     protected void send2Client(byte[] data) {
         // 不需要进行加密，直接返回
-        clientChannel.write(Unpooled.wrappedBuffer(data));
+
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(data);
+        clientChannel.write(byteBuf);
         clientChannel.flush();
         log.info("client <----------------  proxy " + data.length + " byte");
     }

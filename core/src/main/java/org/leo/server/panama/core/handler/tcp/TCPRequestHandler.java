@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 import org.leo.server.panama.core.connector.Request;
 import org.leo.server.panama.core.connector.impl.TCPRequest;
 import org.leo.server.panama.core.handler.RequestHandler;
@@ -28,6 +29,7 @@ public class TCPRequestHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        data = null;
         requestHandler.onClose(ctx);
         super.channelInactive(ctx);
     }
@@ -70,6 +72,7 @@ public class TCPRequestHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         data = null;
         ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        requestHandler.onClose(ctx);
         super.exceptionCaught(ctx, cause);
     }
 
@@ -80,12 +83,18 @@ public class TCPRequestHandler extends ChannelInboundHandlerAdapter {
     protected byte[] read(ChannelHandlerContext ctx, Object msg) {
         ByteBuf byteBuf = (ByteBuf) msg;
 
-        if (!byteBuf.hasArray()) {
-            byte []dataSequence = new byte[byteBuf.readableBytes()];
-            byteBuf.readBytes(dataSequence);
-            return dataSequence;
-        }
+        try {
+            if (!byteBuf.hasArray()) {
+                byte []dataSequence = new byte[byteBuf.readableBytes()];
+                byteBuf.readBytes(dataSequence);
 
-        return null;
+
+                return dataSequence;
+            }
+
+            return null;
+        } finally {
+            ReferenceCountUtil.release(byteBuf);
+        }
     }
 }

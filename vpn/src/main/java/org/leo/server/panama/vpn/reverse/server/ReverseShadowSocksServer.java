@@ -32,6 +32,11 @@ public class ReverseShadowSocksServer implements Server {
 
     private Map<Integer, Proxy> tag2Proxy = Maps.newConcurrentMap();
 
+    /**
+     *
+     * @param host 外网服务器地址
+     * @param port 外网服务器端口
+     */
     public ReverseShadowSocksServer(String host, int port) {
         this.port = port;
         this.host = host;
@@ -40,6 +45,7 @@ public class ReverseShadowSocksServer implements Server {
 
     @Override
     public void start(int maxThread) {
+        // 连接到外网服务器，reverseCoreClient将在断开连接口自动重连
         this.reverseCoreClient.connect(new InetSocketAddress(host, port));
     }
 
@@ -50,9 +56,14 @@ public class ReverseShadowSocksServer implements Server {
 
     @Override
     public Future shutdown() {
+        this.reverseCoreClient.close();
         return null;
     }
 
+    /**
+     * 接收到来自外网服务器的数据，信息如下
+     * @param data
+     */
     private void doRequest(byte []data) {
         int tag = NumberUtils.byteArrayToInt(data);
         byte []realData = new byte[data.length - 4];

@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 import org.leo.server.panama.client.ClientResponseDelegate;
 import org.leo.server.panama.client.tcp.TCPClient;
 import org.leo.server.panama.core.connector.impl.TCPResponse;
@@ -85,12 +86,17 @@ public class TCPClientHandler extends ChannelInboundHandlerAdapter {
     protected byte[] read(ChannelHandlerContext ctx, Object msg) {
         ByteBuf byteBuf = (ByteBuf) msg;
 
-        if (!byteBuf.hasArray()) {
-            byte []dataSequence = new byte[byteBuf.readableBytes()];
-            byteBuf.readBytes(dataSequence);
-            return dataSequence;
-        }
+        try {
+            if (!byteBuf.hasArray()) {
+                byte []dataSequence = new byte[byteBuf.readableBytes()];
+                byteBuf.readBytes(dataSequence);
 
-        return null;
+                return dataSequence;
+            }
+
+            return null;
+        } finally {
+            ReferenceCountUtil.release(byteBuf);
+        }
     }
 }
