@@ -88,13 +88,12 @@ public class TCPRequestHandler extends ChannelInboundHandlerAdapter {
                 byte []dataSequence = new byte[byteBuf.readableBytes()];
                 byteBuf.readBytes(dataSequence);
 
-
                 return dataSequence;
             }
 
             return null;
         } finally {
-            ReferenceCountUtil.release(byteBuf);
+//            ReferenceCountUtil.release(byteBuf);
         }
     }
 }

@@ -96,7 +96,7 @@ public class TCPClientHandler extends ChannelInboundHandlerAdapter {
 
             return null;
         } finally {
-            ReferenceCountUtil.release(byteBuf);
+//            ReferenceCountUtil.release(byteBuf);
         }
     }
 }

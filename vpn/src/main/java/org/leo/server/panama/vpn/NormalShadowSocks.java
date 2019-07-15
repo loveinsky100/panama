@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
  */
 public class NormalShadowSocks {
     public static void main(String []args) throws IOException {
+
         ShadowSocksConfiguration.setType("aes-256-cfb");
         ShadowSocksConfiguration.setPassword("1234567890");
 
