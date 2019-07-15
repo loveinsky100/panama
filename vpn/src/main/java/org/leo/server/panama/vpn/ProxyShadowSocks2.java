@@ -4,8 +4,7 @@ import org.leo.server.panama.server.Server;
 import org.leo.server.panama.server.tcp.TCPServer;
 import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.constant.VPNConstant;
-import org.leo.server.panama.vpn.handler.AgentShadowSocksRequestHandler;
-import org.leo.server.panama.vpn.proxy.factory.ShadowSocksProxyFactory;
+import org.leo.server.panama.vpn.handler.ShadowSocksRequestHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,11 +17,12 @@ import java.io.InputStreamReader;
  */
 public class ProxyShadowSocks2 {
     public static void main(String []args) throws IOException {
-        ShadowSocksConfiguration.setType("aes-256-cfb");
-        ShadowSocksConfiguration.setPassword("1234567890");
+        ShadowSocksConfiguration shadowSocksConfiguration = new ShadowSocksConfiguration();
 
-        Server server = new TCPServer(9899, new AgentShadowSocksRequestHandler());
-        ShadowSocksProxyFactory.startReverseServer();
+        shadowSocksConfiguration.setType("aes-256-cfb");
+        shadowSocksConfiguration.setPassword("123456789");
+
+        Server server = new TCPServer(9899, new ShadowSocksRequestHandler(shadowSocksConfiguration));
 
         System.out.println(server.getClass().getSimpleName() + " start");
         server.start(VPNConstant.MAX_SERVER_THREAD_COUNT);

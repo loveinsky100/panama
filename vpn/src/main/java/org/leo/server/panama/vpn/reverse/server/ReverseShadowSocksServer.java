@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.server.Server;
 import org.leo.server.panama.util.NumberUtils;
+import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.proxy.Proxy;
 import org.leo.server.panama.vpn.proxy.factory.ShadowSocksProxyFactory;
 import org.leo.server.panama.vpn.proxy.impl.ReverseShadowSocksProxy;
@@ -30,16 +31,18 @@ public class ReverseShadowSocksServer implements Server {
     private int port;
     private String host;
 
+    private ShadowSocksConfiguration shadowSocksConfiguration;
+
     private Map<Integer, Proxy> tag2Proxy = Maps.newConcurrentMap();
 
     /**
-     *
-     * @param host 外网服务器地址
-     * @param port 外网服务器端口
+     * 配置信息
+     * @param shadowSocksConfiguration
      */
-    public ReverseShadowSocksServer(String host, int port) {
-        this.port = port;
-        this.host = host;
+    public ReverseShadowSocksServer(ShadowSocksConfiguration shadowSocksConfiguration) {
+        this.port = shadowSocksConfiguration.getReversePort();
+        this.host = shadowSocksConfiguration.getReverseHost();
+        this.shadowSocksConfiguration = shadowSocksConfiguration;
         this.reverseCoreClient = new ReverseCoreClient(new InetSocketAddress(host, port), this::doRequest);
     }
 
@@ -70,10 +73,10 @@ public class ReverseShadowSocksServer implements Server {
         System.arraycopy(data, 4, realData, 0, realData.length);
         Proxy proxy = tag2Proxy.get(tag);
         if (null == proxy) {
-            proxy = ShadowSocksProxyFactory.create(reverseCoreClient.channel(), () -> {
+            proxy = ShadowSocksProxyFactory.createReverseShadowSocksProxy(reverseCoreClient.channel(), () -> {
                 // 发送关闭请求
                 sendCloseMsg(tag);
-            });
+            }, shadowSocksConfiguration);
 
             if (proxy instanceof ReverseShadowSocksProxy) {
                 ReverseShadowSocksProxy reverseShadowSocksProxy = (ReverseShadowSocksProxy)proxy;

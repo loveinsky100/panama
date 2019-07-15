@@ -1,11 +1,7 @@
 package org.leo.server.panama.vpn.configuration;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.alibaba.fastjson.JSON;
+import org.leo.server.panama.vpn.util.FileUtils;
 /**
  * @author xuyangze
  * @date 2018/11/22 4:27 PM
@@ -13,12 +9,16 @@ import java.util.stream.Collectors;
 public class ConfigurationReader {
     private static final String CONFIG_FILE_NAME = "panama.config";
 
-    public static ShadowSocksConfiguration read() {
-        InputStream inputStream = ConfigurationReader.class.getClassLoader().getResourceAsStream("panama.config");
-        String result = new BufferedReader(new InputStreamReader(inputStream))
-                .lines().collect(Collectors.joining(System.lineSeparator()));
+    private static final String DEFAULT_PANAMA_CONFIG = JSON.toJSONString(new ShadowSocksConfiguration());
 
-        Map<String, String> data = PropertiesLoader.loadText(result);
-        return null;
+    public static ShadowSocksConfiguration read() {
+        String config = FileUtils.read(CONFIG_FILE_NAME, DEFAULT_PANAMA_CONFIG);
+        ShadowSocksConfiguration shadowSocksConfiguration = JSON.parseObject(config, ShadowSocksConfiguration.class);
+        return shadowSocksConfiguration;
+    }
+
+    public static void main(String []args) {
+        ShadowSocksConfiguration shadowSocksConfiguration = read();
+        System.out.println(JSON.toJSONString(shadowSocksConfiguration));
     }
 }

@@ -16,13 +16,14 @@ import java.io.InputStreamReader;
  */
 public class InnerReverseShadowSocks {
     public static void main(String []args) throws IOException {
-        ShadowSocksConfiguration.setType("aes-256-cfb");
-        ShadowSocksConfiguration.setPassword("1234567890");
-//        ShadowSocksConfiguration.setReverseHost("35.229.192.233");
-        ShadowSocksConfiguration.setReverseHost("127.0.0.1");
-        ShadowSocksConfiguration.setReversePort(8786);
+        ShadowSocksConfiguration shadowSocksConfiguration = new ShadowSocksConfiguration();
+        shadowSocksConfiguration.setType("aes-256-cfb");
+        shadowSocksConfiguration.setPassword("1234567890");
+//        shadowSocksConfiguration.setReverseHost("35.229.192.233");
+        shadowSocksConfiguration.setReverseHost("127.0.0.1");
+        shadowSocksConfiguration.setReversePort(8786);
 
-        Server server = new ReverseShadowSocksServer(ShadowSocksConfiguration.getReverseHost(), ShadowSocksConfiguration.getReversePort());
+        Server server = new ReverseShadowSocksServer(shadowSocksConfiguration);
         System.out.println(server.getClass().getSimpleName() + " start");
         server.start(VPNConstant.MAX_SERVER_THREAD_COUNT);
     }

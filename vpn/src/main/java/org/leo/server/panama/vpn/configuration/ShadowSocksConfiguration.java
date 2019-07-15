@@ -8,44 +8,44 @@ import java.util.Objects;
  */
 public class ShadowSocksConfiguration {
     // 加密类型
-    private static String type;
+    private String type;
 
     // 加密密码
-    private static String password;
+    private String password;
 
     // 代理服务器
-    private static String proxy;
+    private String proxy;
 
     // 代理服务器
-    private static int proxyPort;
+    private int proxyPort;
 
     // 代理服务器加密类型
-    private static String proxyType;
+    private String proxyType;
 
     // 代理服务器加密密码
-    private static String proxyPassword;
+    private String proxyPassword;
 
     // 是否创建反向代理服务器
-    private static boolean reverse;
+    private boolean reverse;
 
     // 反向代理服务器地址
-    private static String reverseHost;
+    private String reverseHost;
 
     // 反向代理服务器端口
-    private static int reversePort;
+    private int reversePort;
 
-    public static String getType() {
+    public String getType() {
         if (null == type) {
             return "aes-256-cfb";
         }
         return type;
     }
 
-    public static void setType(String type) {
-        ShadowSocksConfiguration.type = type;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public static String getPassword() {
+    public String getPassword() {
         if (null == password) {
             return "123456";
         }
@@ -53,71 +53,71 @@ public class ShadowSocksConfiguration {
         return password;
     }
 
-    public static boolean isReverse() {
+    public boolean isReverse() {
         return reverse;
     }
 
-    public static void setReverse(boolean reverse) {
-        ShadowSocksConfiguration.reverse = reverse;
+    public void setReverse(boolean reverse) {
+        this.reverse = reverse;
     }
 
-    public static String getReverseHost() {
+    public String getReverseHost() {
         return reverseHost;
     }
 
-    public static void setReverseHost(String reverseHost) {
-        ShadowSocksConfiguration.reverseHost = reverseHost;
+    public void setReverseHost(String reverseHost) {
+        this.reverseHost = reverseHost;
     }
 
-    public static int getReversePort() {
+    public int getReversePort() {
         return reversePort;
     }
 
-    public static void setReversePort(int reversePort) {
-        ShadowSocksConfiguration.reversePort = reversePort;
+    public void setReversePort(int reversePort) {
+        this.reversePort = reversePort;
     }
 
-    public static void setPassword(String password) {
-        ShadowSocksConfiguration.password = password;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public static String getProxy() {
+    public String getProxy() {
         return proxy;
     }
 
-    public static void setProxy(String proxy) {
-        ShadowSocksConfiguration.proxy = proxy;
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
     }
 
-    public static String getProxyType() {
+    public String getProxyType() {
         return proxyType;
     }
 
-    public static void setProxyType(String proxyType) {
-        ShadowSocksConfiguration.proxyType = proxyType;
+    public void setProxyType(String proxyType) {
+        this.proxyType = proxyType;
     }
 
-    public static String getProxyPassword() {
+    public String getProxyPassword() {
         return proxyPassword;
     }
 
-    public static void setProxyPassword(String proxyPassword) {
-        ShadowSocksConfiguration.proxyPassword = proxyPassword;
+    public void setProxyPassword(String proxyPassword) {
+        this.proxyPassword = proxyPassword;
     }
 
-    public static int getProxyPort() {
+    public int getProxyPort() {
         return proxyPort;
     }
 
-    public static void setProxyPort(int proxyPort) {
-        ShadowSocksConfiguration.proxyPort = proxyPort;
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
     }
 
-    public static boolean isProxyEnable() {
+    public boolean isProxyEnable() {
         return null != proxy && null != proxyType && null != proxyPassword;
     }
 
-    public static boolean isProxyEqualsCurrent() {
+    public boolean isProxyEqualsCurrent() {
         return Objects.equals(proxyType, type) && Objects.equals(proxyPassword, password);
     }
 }

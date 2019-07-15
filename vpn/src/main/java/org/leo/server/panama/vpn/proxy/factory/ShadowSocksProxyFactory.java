@@ -25,52 +25,55 @@ public class ShadowSocksProxyFactory {
     private static ShadowsocksRequestResolver requestResolver = new ShadowsocksRequestResolver();
 
     // 创建反向代理服务器
-    private static ReverseCoreServer reverseCoreServer = new ReverseCoreServer(ShadowSocksConfiguration.getReversePort());
+    private static ReverseCoreServer reverseCoreServer;
 
-    public static void startReverseServer() {
+    /**
+     * 开启反向代理服务
+     */
+    public static void createReverseServer(ShadowSocksConfiguration shadowSocksConfiguration) {
+        reverseCoreServer = new ReverseCoreServer(shadowSocksConfiguration.getReversePort());
+
         new Thread(() -> {
             reverseCoreServer.start(100);
         }).start();
     }
 
-    public static TCPProxy create(Channel channel, Callback callback) {
-        if (ShadowSocksConfiguration.isReverse()) {
-            return new Redirect2ReverseShadowSocksProxy(
-                    channel,
-                    callback,
-                    ShadowSocksConfiguration.getType(),
-                    ShadowSocksConfiguration.getPassword(),
-                    eventLoopGroup,
-                    requestResolver,
-                    reverseCoreServer);
-        }
+    public static TCPProxy createReverseShadowSocksProxy(Channel channel, Callback callback, ShadowSocksConfiguration shadowSocksConfiguration) {
+        // 反响代理TCP服务
+        return new ReverseShadowSocksProxy(
+                channel,
+                callback,
+                shadowSocksConfiguration,
+                eventLoopGroup,
+                requestResolver);
+    }
 
-        if (null != ShadowSocksConfiguration.getReverseHost()) {
-            return new ReverseShadowSocksProxy(
-                    channel,
-                    callback,
-                    ShadowSocksConfiguration.getType(),
-                    ShadowSocksConfiguration.getPassword(),
-                    eventLoopGroup,
-                    requestResolver);
-        }
+    public static TCPProxy createRedirect2ReverseShadowSocksProxy(Channel channel, Callback callback, ShadowSocksConfiguration shadowSocksConfiguration) {
+        // 反响代理TCP服务
+        return new Redirect2ReverseShadowSocksProxy(
+                channel,
+                callback,
+                shadowSocksConfiguration,
+                eventLoopGroup,
+                requestResolver,
+                reverseCoreServer);
+    }
 
-        if (ShadowSocksConfiguration.isProxyEnable()) {
-            return new AgentShadowSocksProxy(
-                    channel,
-                    callback,
-                    ShadowSocksConfiguration.getType(),
-                    ShadowSocksConfiguration.getPassword(),
-                    eventLoopGroup,
-                    requestResolver);
-        } else {
-            return new ShadowSocksProxy(
-                    channel,
-                    callback,
-                    ShadowSocksConfiguration.getType(),
-                    ShadowSocksConfiguration.getPassword(),
-                    eventLoopGroup,
-                    requestResolver);
-        }
+    public static TCPProxy createAgentShadowSocksProxy(Channel channel, Callback callback, ShadowSocksConfiguration shadowSocksConfiguration) {
+        return new AgentShadowSocksProxy(
+                channel,
+                callback,
+                shadowSocksConfiguration,
+                eventLoopGroup,
+                requestResolver);
+    }
+
+    public static TCPProxy createShadowSocksProxy(Channel channel, Callback callback, ShadowSocksConfiguration shadowSocksConfiguration) {
+        return new ShadowSocksProxy(
+                channel,
+                callback,
+                shadowSocksConfiguration,
+                eventLoopGroup,
+                requestResolver);
     }
 }

@@ -3,6 +3,7 @@ package org.leo.server.panama.vpn.proxy.impl;
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.log4j.Logger;
+import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.proxy.AbstractShadowSocksProxy;
 import org.leo.server.panama.vpn.shadowsocks.ShadowSocksRequest;
 import org.leo.server.panama.vpn.shadowsocks.ShadowsocksRequestResolver;
@@ -17,8 +18,12 @@ import java.util.Arrays;
 public class ShadowSocksProxy extends AbstractShadowSocksProxy {
     private final static Logger log = Logger.getLogger(ShadowSocksProxy.class);
 
-    public ShadowSocksProxy(Channel clientChannel, Callback finish, String encryption, String password, NioEventLoopGroup eventLoopGroup, ShadowsocksRequestResolver requestResolver) {
-        super(clientChannel, finish, encryption, password, eventLoopGroup, requestResolver);
+    public ShadowSocksProxy(Channel clientChannel,
+                            Callback finish,
+                            ShadowSocksConfiguration shadowSocksConfiguration,
+                            NioEventLoopGroup eventLoopGroup,
+                            ShadowsocksRequestResolver requestResolver) {
+        super(clientChannel, finish, shadowSocksConfiguration, eventLoopGroup, requestResolver);
     }
 
     @Override

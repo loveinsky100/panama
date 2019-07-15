@@ -5,10 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.client.Client;
-import org.leo.server.panama.core.connector.impl.TCPResponse;
 import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.proxy.AbstractShadowSocksProxy;
 import org.leo.server.panama.vpn.reverse.client.ReverseTCPClient;
@@ -29,14 +27,14 @@ public class Redirect2ReverseShadowSocksProxy extends AbstractShadowSocksProxy {
 
     public Redirect2ReverseShadowSocksProxy(Channel clientChannel,
                                             Callback finish,
-                                            String encryption,
-                                            String password,
+                                            ShadowSocksConfiguration shadowSocksConfiguration,
                                             NioEventLoopGroup eventLoopGroup,
                                             ShadowsocksRequestResolver requestResolver,
                                             ReverseCoreServer reverseCoreServer) {
-        super(clientChannel, finish, encryption, password, eventLoopGroup, requestResolver);
+        super(clientChannel, finish, shadowSocksConfiguration, eventLoopGroup, requestResolver);
         this.reverseCoreServer = reverseCoreServer;
     }
+
 
     @Override
     public boolean shouldDoPerResponse() {

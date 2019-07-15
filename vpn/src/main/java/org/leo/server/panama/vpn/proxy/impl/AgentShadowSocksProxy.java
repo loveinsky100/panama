@@ -20,14 +20,18 @@ public class AgentShadowSocksProxy extends AbstractShadowSocksProxy {
 
     protected Wrapper agentWrapper;
 
-    public AgentShadowSocksProxy(Channel clientChannel, Callback finish, String encryption, String password, NioEventLoopGroup eventLoopGroup, ShadowsocksRequestResolver requestResolver) {
-        super(clientChannel, finish, encryption, password, eventLoopGroup, requestResolver);
-        agentWrapper = WrapperFactory.getInstance(ShadowSocksConfiguration.getProxyType(), ShadowSocksConfiguration.getProxyPassword(), "encrypt");
+    public AgentShadowSocksProxy(Channel clientChannel,
+                                 Callback finish,
+                                 ShadowSocksConfiguration shadowSocksConfiguration,
+                                 NioEventLoopGroup eventLoopGroup,
+                                 ShadowsocksRequestResolver requestResolver) {
+        super(clientChannel, finish, shadowSocksConfiguration, eventLoopGroup, requestResolver);
+        agentWrapper = WrapperFactory.getInstance(shadowSocksConfiguration.getProxyType(), shadowSocksConfiguration.getProxyPassword(), "encrypt");
     }
 
     @Override
     protected void send2Client(byte[] data) {
-        if (!ShadowSocksConfiguration.isProxyEqualsCurrent()) {
+        if (!shadowSocksConfiguration.isProxyEqualsCurrent()) {
             // 协议不一致，则直接解密后再加密返回给客户端
             data = agentWrapper.unwrap(data);
             data = wrapper.wrap(data);
@@ -43,9 +47,9 @@ public class AgentShadowSocksProxy extends AbstractShadowSocksProxy {
         log.info("client ---------------->  proxy " + data.length + " byte");
 
         byte []decryptData = null;
-        String target = ShadowSocksConfiguration.getProxy();
-        int port = ShadowSocksConfiguration.getProxyPort();
-        if (ShadowSocksConfiguration.isProxyEqualsCurrent()) {
+        String target = shadowSocksConfiguration.getProxy();
+        int port = shadowSocksConfiguration.getProxyPort();
+        if (shadowSocksConfiguration.isProxyEqualsCurrent()) {
             // 协议一致，则直接转发，否则解密后再加密转发
             decryptData = data;
         } else {

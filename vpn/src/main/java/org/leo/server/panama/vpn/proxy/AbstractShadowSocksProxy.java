@@ -10,6 +10,7 @@ import org.leo.server.panama.client.Client;
 import org.leo.server.panama.client.ClientResponseDelegate;
 import org.leo.server.panama.client.tcp.TCPClient;
 import org.leo.server.panama.core.connector.impl.TCPResponse;
+import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.security.wrapper.Wrapper;
 import org.leo.server.panama.vpn.security.wrapper.WrapperFactory;
 import org.leo.server.panama.vpn.shadowsocks.ShadowsocksRequestResolver;
@@ -33,12 +34,16 @@ public abstract class AbstractShadowSocksProxy implements ClientResponseDelegate
     // 代理服务请求返回数据解析
     protected ShadowsocksRequestResolver requestResolver;
 
-    public AbstractShadowSocksProxy(Channel clientChannel, Callback finish, String encryption, String password, NioEventLoopGroup eventLoopGroup, ShadowsocksRequestResolver requestResolver) {
+    // 配置信息
+    protected ShadowSocksConfiguration shadowSocksConfiguration;
+
+    public AbstractShadowSocksProxy(Channel clientChannel, Callback finish, ShadowSocksConfiguration shadowSocksConfiguration, NioEventLoopGroup eventLoopGroup, ShadowsocksRequestResolver requestResolver) {
         this.clientChannel = clientChannel;
-        wrapper = WrapperFactory.getInstance(encryption, password, "encrypt");
+        wrapper = WrapperFactory.getInstance(shadowSocksConfiguration.getType(), shadowSocksConfiguration.getPassword(), "encrypt");
         this.finish = finish;
         this.eventLoopGroup = eventLoopGroup;
         this.requestResolver = requestResolver;
+        this.shadowSocksConfiguration = shadowSocksConfiguration;
     }
 
     @Override
