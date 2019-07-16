@@ -8,7 +8,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.client.Client;
 import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
-import org.leo.server.panama.vpn.proxy.AbstractShadowSocksProxy;
 import org.leo.server.panama.vpn.reverse.client.ReverseTCPClient;
 import org.leo.server.panama.vpn.reverse.core.ReverseCoreServer;
 import org.leo.server.panama.vpn.shadowsocks.ShadowsocksRequestResolver;
@@ -18,7 +17,7 @@ import org.leo.server.panama.vpn.util.Callback;
  * @author xuyangze
  * @date 2018/11/20 8:13 PM
  */
-public class Redirect2ReverseShadowSocksProxy extends AbstractShadowSocksProxy {
+public class Redirect2ReverseShadowSocksProxy extends AgentShadowSocksProxy {
     private final static Logger log = Logger.getLogger(Redirect2ReverseShadowSocksProxy.class);
 
     private final String LOCAL_ADDRESS = "127.0.0.1";
@@ -35,7 +34,6 @@ public class Redirect2ReverseShadowSocksProxy extends AbstractShadowSocksProxy {
         this.reverseCoreServer = reverseCoreServer;
     }
 
-
     @Override
     public boolean shouldDoPerResponse() {
         return false;
@@ -47,22 +45,9 @@ public class Redirect2ReverseShadowSocksProxy extends AbstractShadowSocksProxy {
     }
 
     @Override
-    protected void send2Client(byte[] data) {
-        // 不需要进行加密，直接返回
-
-        ByteBuf byteBuf = Unpooled.wrappedBuffer(data);
-        clientChannel.write(byteBuf);
-        clientChannel.flush();
-        log.info("client <----------------  proxy " + data.length + " byte");
-    }
-
-    @Override
     public void doProxy(byte []data) {
-        // 不需要解密，直接透传给下一个节点
-        log.info("client ---------------->  proxy " + data.length + " byte");
-
         // 此处的host和port请忽略，实际上的client为一个反向代理服务器ReverseTCPClient
-        sendRequest2Target(data, LOCAL_ADDRESS, 8080);
+        doProxy(data, LOCAL_ADDRESS, 8080);
     }
 
     @Override

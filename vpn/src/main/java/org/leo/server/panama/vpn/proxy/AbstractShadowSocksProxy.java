@@ -67,7 +67,6 @@ public abstract class AbstractShadowSocksProxy implements ClientResponseDelegate
     public void onConnectClosed(Client client) {
         // send close data
         log.info("client <----------------  proxy closed");
-        clientChannel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         if (null != finish) {
             try {
                 finish.call();
@@ -75,6 +74,8 @@ public abstract class AbstractShadowSocksProxy implements ClientResponseDelegate
                 //
             }
         }
+
+        clientChannel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
     }
 
     protected void send2Client(byte []data) {

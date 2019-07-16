@@ -37,8 +37,9 @@ public class CipherWrapper extends Wrapper {
     public byte[] unwrap(final byte[] bytes) {
         if (decipherIv == null) {
             int ivLength = decipher.getIVLength();
-            if (bytes.length < ivLength)
-                throw new RuntimeException("invalid encrypted data");
+            if (bytes.length < ivLength) {
+                throw new RuntimeException("invalid encrypted data, bytes.length: " + bytes.length + " ivLength: " + ivLength);
+            }
 
             this.decipherIv = Arrays.copyOfRange(bytes, 0, ivLength);
             decipher.init(false, decipherIv);

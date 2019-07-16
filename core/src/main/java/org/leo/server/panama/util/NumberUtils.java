@@ -12,6 +12,13 @@ public class NumberUtils {
                 (b[0] & 0xFF) << 24;
     }
 
+    public static int byteArrayToInt(byte[] b, int start) {
+        return   b[start + 3] & 0xFF |
+                (b[start + 2] & 0xFF) << 8 |
+                (b[start + 1] & 0xFF) << 16 |
+                (b[start] & 0xFF) << 24;
+    }
+
     public static byte[] intToByteArray(int a) {
         return new byte[] {
                 (byte) ((a >> 24) & 0xFF),

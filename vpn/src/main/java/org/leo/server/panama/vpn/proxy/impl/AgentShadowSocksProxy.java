@@ -44,11 +44,15 @@ public class AgentShadowSocksProxy extends AbstractShadowSocksProxy {
 
     @Override
     public void doProxy(byte []data) {
+        String target = shadowSocksConfiguration.getProxy();
+        int port = shadowSocksConfiguration.getProxyPort();
+        doProxy(data, target, port);
+    }
+
+    protected void doProxy(byte []data, String target, int port) {
         log.info("client ---------------->  proxy " + data.length + " byte");
 
         byte []decryptData = null;
-        String target = shadowSocksConfiguration.getProxy();
-        int port = shadowSocksConfiguration.getProxyPort();
         if (shadowSocksConfiguration.isProxyEqualsCurrent()) {
             // 协议一致，则直接转发，否则解密后再加密转发
             decryptData = data;

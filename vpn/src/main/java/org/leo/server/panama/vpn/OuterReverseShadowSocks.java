@@ -19,11 +19,17 @@ public class OuterReverseShadowSocks {
     public static void main(String []args) throws IOException {
         ShadowSocksConfiguration shadowSocksConfiguration = new ShadowSocksConfiguration();
 
+        // 本地配置
         shadowSocksConfiguration.setType("aes-256-cfb");
         shadowSocksConfiguration.setPassword("1234567890");
 
+        // 反向代理服务配置
         shadowSocksConfiguration.setReverse(true);
         shadowSocksConfiguration.setReversePort(8786);
+
+        // 代理内网端配置
+        shadowSocksConfiguration.setProxyType("aes-256-cfb");
+        shadowSocksConfiguration.setProxyPassword("123456789");
 
         Server server = new TCPServer(9898, new Redirect2ReverseShadowSocksRequestHandler(shadowSocksConfiguration));
 

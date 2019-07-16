@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 public class LocalCacheFactory {
     public static Cache createCache(long expire, int maxSize) {
         Cache<String, InetSocketAddress> cache = CacheBuilder.newBuilder()
-                .maximumSize(2000)
-                .expireAfterAccess(5, TimeUnit.MINUTES)
+                .maximumSize(maxSize)
+                .expireAfterAccess(expire, TimeUnit.MILLISECONDS)
                 .build();
 
         return cache;

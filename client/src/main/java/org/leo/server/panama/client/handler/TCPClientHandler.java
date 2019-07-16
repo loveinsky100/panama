@@ -44,7 +44,7 @@ public class TCPClientHandler extends ChannelInboundHandlerAdapter {
             }
         }
 
-        super.channelRead(ctx, msg);
+//        super.channelRead(ctx, msg);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class TCPClientHandler extends ChannelInboundHandlerAdapter {
 
             return null;
         } finally {
-//            ReferenceCountUtil.release(byteBuf);
+            ReferenceCountUtil.release(byteBuf);
         }
     }
 }

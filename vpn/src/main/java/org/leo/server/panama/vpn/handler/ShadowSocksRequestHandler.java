@@ -14,7 +14,7 @@ public class ShadowSocksRequestHandler implements RequestHandler<TCPRequest> {
     private final static Logger log = Logger.getLogger(AgentShadowSocksRequestHandler.class);
 
     // 请求和代理缓存
-    private Cache<Channel, TCPProxy> channel2ProxyCache = LocalCacheFactory.createCache(5 * 60 * 1000, 2000);
+    private Cache<Channel, TCPProxy> channel2ProxyCache = LocalCacheFactory.createCache(5 * 60 * 1000, 20000);
 
     private ShadowSocksConfiguration shadowSocksConfiguration;
     public ShadowSocksRequestHandler(ShadowSocksConfiguration shadowSocksConfiguration) {

@@ -1,7 +1,12 @@
 package org.leo.server.panama.vpn.reverse.server;
 
+import com.google.common.cache.Cache;
 import com.google.common.collect.Maps;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.util.concurrent.SucceededFuture;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.server.Server;
 import org.leo.server.panama.util.NumberUtils;
@@ -11,8 +16,12 @@ import org.leo.server.panama.vpn.proxy.factory.ShadowSocksProxyFactory;
 import org.leo.server.panama.vpn.proxy.impl.ReverseShadowSocksProxy;
 import org.leo.server.panama.vpn.reverse.constant.ReverseConstants;
 import org.leo.server.panama.vpn.reverse.core.ReverseCoreClient;
+import org.leo.server.panama.vpn.reverse.protocol.ReverseProtocol;
+import org.leo.server.panama.vpn.util.Callback;
+import org.leo.server.panama.vpn.util.LocalCacheFactory;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -33,7 +42,8 @@ public class ReverseShadowSocksServer implements Server {
 
     private ShadowSocksConfiguration shadowSocksConfiguration;
 
-    private Map<Integer, Proxy> tag2Proxy = Maps.newConcurrentMap();
+    // TCP连接缓存。关闭连接时进行清理
+    private Cache<Integer, Proxy> tag2Proxy = LocalCacheFactory.createCache(60 * 1000 * 5, 20000);
 
     /**
      * 配置信息
@@ -68,10 +78,27 @@ public class ReverseShadowSocksServer implements Server {
      * @param data
      */
     private void doRequest(byte []data) {
-        int tag = NumberUtils.byteArrayToInt(data);
-        byte []realData = new byte[data.length - 4];
-        System.arraycopy(data, 4, realData, 0, realData.length);
-        Proxy proxy = tag2Proxy.get(tag);
+        List<ReverseProtocol.ReverseProtocolData> reverseProtocolDatas = ReverseProtocol.decodeProtocol(data);
+
+        if (null == reverseProtocolDatas || reverseProtocolDatas.size() == 0) {
+            log.error("reverseProtocolDatas is empty, but data size is: " + data.length);
+            return;
+        }
+
+        reverseProtocolDatas.forEach(reverseProtocolData -> this.doProxy(reverseProtocolData.getTag(), reverseProtocolData.getData()));
+    }
+
+    private void doProxy(int tag, byte[] data) {
+        if (data.length == 4) {
+            // 关闭连接
+            int closeFlag = NumberUtils.byteArrayToInt(data);
+            if (closeFlag == ReverseConstants.CLOSE_MAGIC) {
+                tag2Proxy.invalidate(tag);
+                return;
+            }
+        }
+
+        Proxy proxy = tag2Proxy.getIfPresent(tag);
         if (null == proxy) {
             proxy = ShadowSocksProxyFactory.createReverseShadowSocksProxy(reverseCoreClient.channel(), () -> {
                 // 发送关闭请求
@@ -80,14 +107,14 @@ public class ReverseShadowSocksServer implements Server {
 
             if (proxy instanceof ReverseShadowSocksProxy) {
                 ReverseShadowSocksProxy reverseShadowSocksProxy = (ReverseShadowSocksProxy)proxy;
-                reverseShadowSocksProxy.setAppendTagFunc(response -> Unpooled.wrappedBuffer(NumberUtils.intToByteArray(tag), response));
+                reverseShadowSocksProxy.setAppendTagFunc(response -> Unpooled.wrappedBuffer(ReverseProtocol.encodeProtocol(tag, response)));
             }
 
             tag2Proxy.put(tag, proxy);
         }
 
         try {
-            proxy.doProxy(realData);
+            proxy.doProxy(data);
         } catch (Exception e) {
             log.error("doRequest error", e);
             sendCloseMsg(tag);
@@ -96,8 +123,6 @@ public class ReverseShadowSocksServer implements Server {
 
     private void sendCloseMsg(int tag) {
         // 发送关闭请求
-        reverseCoreClient.channel().writeAndFlush(Unpooled.wrappedBuffer(NumberUtils.intToByteArray(tag), NumberUtils.intToByteArray(ReverseConstants.CLOSE_MAGIC)));
-        tag2Proxy.remove(tag);
+        reverseCoreClient.channel().writeAndFlush(ReverseProtocol.encodeProtocol(tag, NumberUtils.intToByteArray(ReverseConstants.CLOSE_MAGIC)));
     }
-
 }

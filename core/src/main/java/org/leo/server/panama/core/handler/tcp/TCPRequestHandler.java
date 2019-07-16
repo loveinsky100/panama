@@ -49,7 +49,7 @@ public class TCPRequestHandler extends ChannelInboundHandlerAdapter {
             System.arraycopy(readData, 0, data, start, readData.length);
         }
 
-        super.channelRead(ctx, msg);
+//        super.channelRead(ctx, msg);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class TCPRequestHandler extends ChannelInboundHandlerAdapter {
 
             return null;
         } finally {
-//            ReferenceCountUtil.release(byteBuf);
+            ReferenceCountUtil.release(byteBuf);
         }
     }
 }

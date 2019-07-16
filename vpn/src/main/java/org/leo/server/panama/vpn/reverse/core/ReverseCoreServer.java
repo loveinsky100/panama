@@ -1,10 +1,7 @@
 package org.leo.server.panama.vpn.reverse.core;
 
-import com.google.common.collect.Maps;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
+import com.google.common.cache.Cache;
+import io.netty.channel.*;
 import org.apache.log4j.Logger;
 import org.leo.server.panama.core.connector.impl.TCPRequest;
 import org.leo.server.panama.core.handler.RequestHandler;
@@ -12,10 +9,12 @@ import org.leo.server.panama.core.handler.tcp.TCPRequestHandler;
 import org.leo.server.panama.server.tcp.TCPServer;
 import org.leo.server.panama.util.NumberUtils;
 import org.leo.server.panama.vpn.reverse.constant.ReverseConstants;
+import org.leo.server.panama.vpn.reverse.protocol.ReverseProtocol;
 import org.leo.server.panama.vpn.util.Callback;
+import org.leo.server.panama.vpn.util.LocalCacheFactory;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -35,8 +34,8 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
 
     private RandomList<Channel> channels = new RandomList();
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private Map<Integer, Consumer<byte []>> tag2ConsumerMap = Maps.newConcurrentMap();
-    private Map<Integer, Callback> tag2ClosedMap = Maps.newConcurrentMap();
+    private Cache<Integer, Consumer<byte []>> tag2ConsumerMap = LocalCacheFactory.createCache(60 * 1000 * 5, 20000);
+    private Cache<Integer, Callback> tag2ClosedMap = LocalCacheFactory.createCache(60 * 1000 * 5, 20000);
 
     public ReverseCoreServer(int port) {
         super(port);
@@ -50,13 +49,16 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
         }
 
         // 生成tag
-        byte []tagByte = NumberUtils.intToByteArray(tag);
+        if (null != callback) {
+            tag2ConsumerMap.put(tag, callback);
+        }
 
-        tag2ConsumerMap.put(tag, callback);
-        tag2ClosedMap.put(tag, closed);
+        if (null != closed) {
+            tag2ClosedMap.put(tag, closed);
+        }
 
         // 由于复用同一条连接，所有的请求应当带上标记
-        channel.writeAndFlush(Unpooled.wrappedBuffer(tagByte, data));
+        channel.writeAndFlush(ReverseProtocol.encodeProtocol(tag, data));
     }
 
     @Override
@@ -72,38 +74,45 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
 
     @Override
     public void doRequest(TCPRequest request) {
-        byte []data = request.getData();
-        int tag = NumberUtils.byteArrayToInt(data);
+        List<ReverseProtocol.ReverseProtocolData> reverseProtocolDatas = ReverseProtocol.decodeProtocol(request.getData());
 
-        Consumer<byte []> consumer = tag2ConsumerMap.get(tag);
-        if (null != consumer) {
-            byte []realData = new byte[data.length - 4];
-            System.arraycopy(data, 4, realData, 0, realData.length);
-            if (realData.length != 4) {
-                consumer.accept(realData);
-            } else {
-                int closeFlag = NumberUtils.byteArrayToInt(realData);
-                if (closeFlag == ReverseConstants.CLOSE_MAGIC) {
-                    Callback callback = tag2ClosedMap.get(tag);
-                    tag2ConsumerMap.remove(consumer);
-                    if (null != callback) {
-                        callback.call();
-                    }
-                }
-            }
+        if (null == reverseProtocolDatas || reverseProtocolDatas.size() == 0) {
+            log.error("reverseProtocolDatas is empty, but data size is: " + request.getData().length);
+            return;
         }
+
+        reverseProtocolDatas.forEach(reverseProtocolData -> this.doRequest(reverseProtocolData.getTag(), reverseProtocolData.getData()));
     }
 
     @Override
     public void onClose(ChannelHandlerContext ctx) {
         write(() -> channels.remove(ctx.channel()));
         log.info("onClose remove");
-        for (Callback callback : tag2ClosedMap.values()) {
+        for (Callback callback : tag2ClosedMap.asMap().values()) {
             callback.call();
         }
 
-        tag2ClosedMap.clear();
-        tag2ConsumerMap.clear();
+        tag2ClosedMap.invalidateAll();
+        tag2ConsumerMap.invalidateAll();
+    }
+
+    private void doRequest(int tag, byte[] data) {
+        Consumer<byte []> consumer = tag2ConsumerMap.getIfPresent(tag);
+        if (null != consumer) {
+            if (data.length != 4) {
+                consumer.accept(data);
+            } else {
+                int closeFlag = NumberUtils.byteArrayToInt(data);
+                if (closeFlag == ReverseConstants.CLOSE_MAGIC) {
+                    Callback callback = tag2ClosedMap.getIfPresent(tag);
+                    if (null != callback) {
+                        tag2ConsumerMap.invalidate(tag);
+                        tag2ClosedMap.invalidate(tag);
+                        callback.call();
+                    }
+                }
+            }
+        }
     }
 
     private <T> T read(Supplier<T> supplier) {

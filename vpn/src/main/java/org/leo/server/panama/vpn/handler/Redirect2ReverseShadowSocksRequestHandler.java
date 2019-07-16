@@ -5,7 +5,7 @@ import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.proxy.TCPProxy;
 import org.leo.server.panama.vpn.proxy.factory.ShadowSocksProxyFactory;
 
-public class Redirect2ReverseShadowSocksRequestHandler extends ShadowSocksRequestHandler {
+public class Redirect2ReverseShadowSocksRequestHandler extends AgentShadowSocksRequestHandler {
     public Redirect2ReverseShadowSocksRequestHandler(ShadowSocksConfiguration shadowSocksConfiguration) {
         super(shadowSocksConfiguration);
         ShadowSocksProxyFactory.createReverseServer(shadowSocksConfiguration);
