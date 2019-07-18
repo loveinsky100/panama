@@ -1,6 +1,7 @@
 package org.leo.server.panama.vpn.configuration;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.leo.server.panama.vpn.util.FileUtils;
 /**
  * @author xuyangze
@@ -9,10 +10,18 @@ import org.leo.server.panama.vpn.util.FileUtils;
 public class ConfigurationReader {
     private static final String CONFIG_FILE_NAME = "panama.config";
 
-    private static final String DEFAULT_PANAMA_CONFIG = JSON.toJSONString(new ShadowSocksConfiguration());
+    private static final String DEFAULT_PANAMA_CONFIG = JSON.toJSONString(new ShadowSocksConfiguration(), SerializerFeature.PrettyFormat);
 
     public static ShadowSocksConfiguration read() {
-        String config = FileUtils.read(CONFIG_FILE_NAME, DEFAULT_PANAMA_CONFIG);
+        return read(null);
+    }
+
+    public static ShadowSocksConfiguration read(String configFileName) {
+        if (null == configFileName || configFileName.length() == 0) {
+            configFileName = CONFIG_FILE_NAME;
+        }
+
+        String config = FileUtils.read(configFileName, DEFAULT_PANAMA_CONFIG);
         ShadowSocksConfiguration shadowSocksConfiguration = JSON.parseObject(config, ShadowSocksConfiguration.class);
         return shadowSocksConfiguration;
     }

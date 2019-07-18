@@ -58,4 +58,10 @@ public class ReverseShadowSocksProxy extends ShadowSocksProxy {
     public void setAppendTagFunc(Function<byte[], ByteBuf> appendTagFunc) {
         this.appendTagFunc = appendTagFunc;
     }
+
+    public void closeTargetConnection() {
+        if (null != this.redirectClient) {
+            this.redirectClient.close();
+        }
+    }
 }

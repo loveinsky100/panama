@@ -87,7 +87,6 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
     @Override
     public void onClose(ChannelHandlerContext ctx) {
         write(() -> channels.remove(ctx.channel()));
-        log.info("onClose remove");
         for (Callback callback : tag2ClosedMap.asMap().values()) {
             callback.call();
         }

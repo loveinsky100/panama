@@ -93,7 +93,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.leo.server.panama.vpn.InnerReverseShadowSocks</mainClass>
+                            <mainClass>org.leo.server.panama.vpn.Panama</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

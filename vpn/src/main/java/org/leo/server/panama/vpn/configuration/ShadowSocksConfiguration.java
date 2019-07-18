@@ -7,31 +7,61 @@ import java.util.Objects;
  * @date 2018/10/10 下午3:16
  */
 public class ShadowSocksConfiguration {
-    // 加密类型
+
+    /**
+     * 启动模式
+     * {@link ShadowSocksModeEnum}
+     */
+    private String mode;
+
+    /**
+     * 加密类型
+     */
     private String type;
 
-    // 加密密码
+    /**
+     * 加密密码
+     */
     private String password;
 
-    // 代理服务器
+    /**
+     * 启动端口
+     */
+    private int port;
+
+    /**
+     * 代理服务器地址
+     */
     private String proxy;
 
-    // 代理服务器
+    /**
+     * 代理服务器端口
+     */
     private int proxyPort;
 
-    // 代理服务器加密类型
+    /**
+     * 代理服务器加密类型
+     */
     private String proxyType;
 
-    // 代理服务器加密密码
+    /**
+     * 代理服务器加密密码
+     */
     private String proxyPassword;
 
-    // 是否创建反向代理服务器
+    /**
+     * 是否创建反向代理服务器
+     */
     private boolean reverse;
 
-    // 反向代理服务器地址
+    /**
+     * 反向代理服务器地址
+     */
     private String reverseHost;
 
-    // 反向代理服务器端口
+    /**
+     * 反向代理服务器端口
+     */
     private int reversePort;
 
     public String getType() {
@@ -51,6 +81,18 @@ public class ShadowSocksConfiguration {
         }
 
         return password;
+    }
+
+    public int getPort() {
+        if (0 == port) {
+            return 9898;
+        }
+
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public boolean isReverse() {
@@ -119,5 +161,17 @@ public class ShadowSocksConfiguration {
 
     public boolean isProxyEqualsCurrent() {
         return Objects.equals(proxyType, type) && Objects.equals(proxyPassword, password);
+    }
+
+    public String getMode() {
+        if (null == mode) {
+            return ShadowSocksModeEnum.NORMAL.getMode();
+        }
+
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 }

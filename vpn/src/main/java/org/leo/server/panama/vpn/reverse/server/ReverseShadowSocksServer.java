@@ -93,6 +93,12 @@ public class ReverseShadowSocksServer implements Server {
             // 关闭连接
             int closeFlag = NumberUtils.byteArrayToInt(data);
             if (closeFlag == ReverseConstants.CLOSE_MAGIC) {
+                Proxy proxy = tag2Proxy.getIfPresent(tag);
+                if (null != proxy && proxy instanceof ReverseShadowSocksProxy) {
+                    ReverseShadowSocksProxy reverseShadowSocksProxy = (ReverseShadowSocksProxy)proxy;
+                    reverseShadowSocksProxy.closeTargetConnection();
+                }
+
                 tag2Proxy.invalidate(tag);
                 return;
             }
@@ -116,7 +122,8 @@ public class ReverseShadowSocksServer implements Server {
         try {
             proxy.doProxy(data);
         } catch (Exception e) {
-            log.error("doRequest error", e);
+            System.out.println("doRequest error for tag: " + tag);
+//            log.error("doRequest error for tag: " + tag, e);
             sendCloseMsg(tag);
         }
     }

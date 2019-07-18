@@ -63,6 +63,18 @@ public class FileUtils {
         return null;
     }
 
+    public static String readFromResource(String file) {
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+        if (null == inputStream) {
+            return "";
+        }
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String result = bufferedReader.lines().map(value -> value + "\n").collect(Collectors.joining());
+
+        return result;
+    }
+
     private static void writeToFile(File file, String value) {
         FileOutputStream fileOutputStream = null;
         try {
@@ -81,7 +93,6 @@ public class FileUtils {
                 }
             }
         }
-
     }
 
     public static void main(String []args) {
