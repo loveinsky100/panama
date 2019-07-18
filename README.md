@@ -3,7 +3,7 @@
 
 使用
 ---
-1.java 8或者以上版本
+1.java 8或者以上版本<br>
 2.下载panama.jar或者使用maven3以上进行打包，生成panama.jar<br>
 3.在panama.jar同级目录下配置panama.config<br>
 4.执行命令java -jar panama.jar<br>
@@ -11,18 +11,18 @@
 panama.config:
 ```
 {
-	"password":"1234567890",
-	"port":9898,
-	"type":"aes-256-cfb"
+    "password":"1234567890",
+    "port":9898,
+    "type":"aes-256-cfb"
 }
 ```
 
 配置详情
 ```
 {
-	"password":"1234567890", // 密钥
-	"port":9898,			 // 启动端口
-	"type":"aes-256-cfb"	 // 加密类型
+    "password":"1234567890", // 密钥
+    "port":9898,             // 启动端口
+    "type":"aes-256-cfb"     // 加密类型
 }
 ```
 ---
@@ -41,46 +41,46 @@ panama.config:
 代理端panama.config:
 ```
 {
-	"mode":"proxy",
-	"password":"1234567890",
-	"type":"aes-256-cfb",
-	"port":9898,
-	"proxy": "127.0.0.1",
-	"proxyPort":9899,
-	"proxyType":"aes-256-cfb",
-	"proxyPassword":"123456789"
+    "mode":"proxy",
+    "password":"1234567890",
+    "type":"aes-256-cfb",
+    "port":9898,
+    "proxy": "127.0.0.1",
+    "proxyPort":9899,
+    "proxyType":"aes-256-cfb",
+    "proxyPassword":"123456789"
 }
 ```
 
 配置详情
 ```
 {
-	"mode":"proxy",				// 启动模式，代理模式
-	"password":"1234567890",	// 密钥
-	"type":"aes-256-cfb",		// 加密类型
-	"port":9898,				// 代理端启动端口
-	"proxy": "127.0.0.1",		// 真实服务地址
-	"proxyPort":9899,			// 服务端口
-	"proxyType":"aes-256-cfb",	// 服务加密类型
-	"proxyPassword":"123456789"	// 服务密钥
+    "mode":"proxy",                // 启动模式，代理模式
+    "password":"1234567890",    // 密钥
+    "type":"aes-256-cfb",        // 加密类型
+    "port":9898,                // 代理端启动端口
+    "proxy": "127.0.0.1",        // 真实服务地址
+    "proxyPort":9899,            // 服务端口
+    "proxyType":"aes-256-cfb",    // 服务加密类型
+    "proxyPassword":"123456789"    // 服务密钥
 }
 ```
 
 真实服务端端panama.config:
 ```
 {
-	"password":"123456789",
-	"port":9899,
-	"type":"aes-256-cfb"
+    "password":"123456789",
+    "port":9899,
+    "type":"aes-256-cfb"
 }
 ```
 
 配置详情
 ```
 {
-	"password":"123456789",		// 密钥，密钥需要同proxyType保持一致
-	"port":9899,				// 启动端口，端口需要同proxyPort保持一致
-	"type":"aes-256-cfb"		// 加密类型，加密类型同proxyType保持一致
+    "password":"123456789",        // 密钥，密钥需要同proxyType保持一致
+    "port":9899,                // 启动端口，端口需要同proxyPort保持一致
+    "type":"aes-256-cfb"        // 加密类型，加密类型同proxyType保持一致
 }
 ```
 ---
@@ -89,48 +89,48 @@ panama.config:
 反向代理模式，外部 panama.config:
 ```
 {
-	"mode":"outer",
-	"password":"1234567890",
-	"type":"aes-256-cfb",
-	"port":9898,
-	"proxyType":"aes-256-cfb",
-	"proxyPassword":"123456789",
-	"reversePort":9899
+    "mode":"outer",
+    "password":"1234567890",
+    "type":"aes-256-cfb",
+    "port":9898,
+    "proxyType":"aes-256-cfb",
+    "proxyPassword":"123456789",
+    "reversePort":9899
 }
 ```
 
 配置详情
 ```
 {
-	"mode":"outer",					// 模式，内网穿透，外网服务端
-	"password":"1234567890",		// 外网连接密钥
-	"type":"aes-256-cfb",			// 外网连接加密方式
-	"port":9898,					// 外网启动端口
-	"proxyType":"aes-256-cfb",		// 内网连接加密方式
-	"proxyPassword":"123456789",	// 内网连接密钥
-	"reversePort":9899				// 本机对内网服务暴露的反向代理端口
+    "mode":"outer",                    // 模式，内网穿透，外网服务端
+    "password":"1234567890",        // 外网连接密钥
+    "type":"aes-256-cfb",            // 外网连接加密方式
+    "port":9898,                    // 外网启动端口
+    "proxyType":"aes-256-cfb",        // 内网连接加密方式
+    "proxyPassword":"123456789",    // 内网连接密钥
+    "reversePort":9899                // 本机对内网服务暴露的反向代理端口
 }
 ```
 
 反向代理模式，内部 panama.config:
 ```
 {
-	"mode":"inner",
-	"password":"123456789",
-	"type":"aes-256-cfb",
-	"reverseHost":"127.0.0.1",
-	"reversePort":9899
+    "mode":"inner",
+    "password":"123456789",
+    "type":"aes-256-cfb",
+    "reverseHost":"127.0.0.1",
+    "reversePort":9899
 }
 ```
 
 配置详情
 ```
 {
-	"mode":"inner",					// 模式，内网穿透，内网服务端
-	"password":"123456789",			// 内网服务器密钥
-	"type":"aes-256-cfb",			// 内网服务器加密方式
-	"reverseHost":"127.0.0.1",		// 外网服务器地址
-	"reversePort":9899				// 外网服务器反向代理端口
+    "mode":"inner",                    // 模式，内网穿透，内网服务端
+    "password":"123456789",            // 内网服务器密钥
+    "type":"aes-256-cfb",            // 内网服务器加密方式
+    "reverseHost":"127.0.0.1",        // 外网服务器地址
+    "reversePort":9899                // 外网服务器反向代理端口
 }
 ```
 ---
