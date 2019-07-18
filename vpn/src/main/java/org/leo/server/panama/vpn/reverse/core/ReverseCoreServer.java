@@ -45,6 +45,7 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
         // 获取一条连接
         Channel channel = read(() -> channels.select());
         if (null == channel) {
+            log.error("proxy --------!-------> target: 0 inner found");
             return;
         }
 

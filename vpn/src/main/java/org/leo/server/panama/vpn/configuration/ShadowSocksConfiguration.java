@@ -50,11 +50,6 @@ public class ShadowSocksConfiguration {
     private String proxyPassword;
 
     /**
-     * 是否创建反向代理服务器
-     */
-    private boolean reverse;
-
-    /**
      * 反向代理服务器地址
      */
     private String reverseHost;
@@ -93,14 +88,6 @@ public class ShadowSocksConfiguration {
 
     public void setPort(int port) {
         this.port = port;
-    }
-
-    public boolean isReverse() {
-        return reverse;
-    }
-
-    public void setReverse(boolean reverse) {
-        this.reverse = reverse;
     }
 
     public String getReverseHost() {
@@ -153,10 +140,6 @@ public class ShadowSocksConfiguration {
 
     public void setProxyPort(int proxyPort) {
         this.proxyPort = proxyPort;
-    }
-
-    public boolean isProxyEnable() {
-        return null != proxy && null != proxyType && null != proxyPassword;
     }
 
     public boolean isProxyEqualsCurrent() {

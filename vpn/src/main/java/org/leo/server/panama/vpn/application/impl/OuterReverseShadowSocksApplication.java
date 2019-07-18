@@ -30,7 +30,6 @@ public class OuterReverseShadowSocksApplication implements ShadowSocksApplicatio
         shadowSocksConfiguration.setPort(9898);
 
         // 反向代理服务配置
-        shadowSocksConfiguration.setReverse(true);
         shadowSocksConfiguration.setReversePort(8786);
 
         // 指定代理内网端配置
