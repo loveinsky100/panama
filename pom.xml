@@ -24,7 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
-        <panama.io.netty.version>4.1.31.Final</panama.io.netty.version>
+        <panama.io.netty.version>4.1.42.Final</panama.io.netty.version>
     </properties>
 
     <dependencyManagement>
