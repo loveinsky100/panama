@@ -30,9 +30,9 @@ panama.config:
 
 功能 | 描述
 ---- | ----
-普通模式 | 使用shadowSock客户端连接服务器A，服务器A进行网络代理，然后返回用户请求数据
-代理模式 | 使用shadowSock客户端连接代理服务器A，代理A向真实shadowSock服务器B发送请求，由B完成服务请求，然后返回响应数据给客户端
-反向代理 | 存在一台外网代理服务器A，一台内网服务器B，shadowSock客户端连接A，客户端请求由A转发给B，前提是B能够访问到A
+普通模式 | 使用shadowSock客户端连接服务器A，服务器A进行网络代理，然后返回用户请求数据。client -> server(public) -> target
+代理模式 | 使用shadowSock客户端连接代理服务器A，代理A向真实shadowSock服务器B发送请求，由B完成服务请求，然后返回响应数据给客户端，client -> server(public_1) -> server(public_2) -> target
+反向代理 | 存在一台外网代理服务器A，一台内网服务器B，shadowSock客户端连接A，客户端请求由A转发给B，前提是B能够访问到A。client -> server(public) <-- server(private) -> target
 
 
 ---
