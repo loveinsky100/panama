@@ -52,10 +52,22 @@ public class ReverseProtocol {
         if (null != lastReverseProtocolData && !lastReverseProtocolData.isComplete()) {
             // 剩余没有读取的数据，对于tcp拆包后可能存在这种问题
             byte []data = lastReverseProtocolData.getData();
+
+            // 剩余需要写入的长度 = 实际需要的长度 - 当前已有长度
             int leftSize = data.length - lastReverseProtocolData.getSize();
 
-            System.arraycopy(content, start, data, lastReverseProtocolData.getSize(), leftSize);
-            start += leftSize;
+            int copySize = leftSize;
+            if (copySize > content.length) {
+                copySize = content.length;
+            } else {
+                lastReverseProtocolData.setComplete(true);
+            }
+
+            System.arraycopy(content, start, data, lastReverseProtocolData.getSize(), copySize);
+
+            lastReverseProtocolData.setSize(lastReverseProtocolData.getSize() + copySize);
+            reverseProtocolDatas.add(lastReverseProtocolData);
+            start += copySize;
         }
 
         while (start < content.length) {

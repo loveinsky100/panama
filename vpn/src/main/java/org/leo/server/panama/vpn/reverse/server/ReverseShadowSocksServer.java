@@ -159,7 +159,6 @@ public class ReverseShadowSocksServer implements Server {
 
     private void sendCloseMsg(int tag) {
         // 发送关闭请求
-        System.out.println("send close to tag : " + tag);
         reverseCoreClient.channel().writeAndFlush(ReverseProtocol.encodeProtocol(tag, NumberUtils.intToByteArray(ReverseConstants.CLOSE_MAGIC)));
     }
 }

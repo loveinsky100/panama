@@ -26,7 +26,6 @@ public class InnerReverseShadowSocksApplication implements ShadowSocksApplicatio
 
         shadowSocksConfiguration.setReverseHost("127.0.0.1");
         shadowSocksConfiguration.setReversePort(8786);
-
         ShadowSocksApplication shadowSocksApplication = new InnerReverseShadowSocksApplication();
         shadowSocksApplication.start(shadowSocksConfiguration);
     }
