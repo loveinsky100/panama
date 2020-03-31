@@ -26,7 +26,7 @@ public class AgentShadowSocksProxy extends AbstractShadowSocksProxy {
                                  NioEventLoopGroup eventLoopGroup,
                                  ShadowsocksRequestResolver requestResolver) {
         super(clientChannel, finish, shadowSocksConfiguration, eventLoopGroup, requestResolver);
-        agentWrapper = WrapperFactory.getInstance(shadowSocksConfiguration.getProxyType(), shadowSocksConfiguration.getProxyPassword(), "encrypt");
+        agentWrapper = WrapperFactory.getInstance(shadowSocksConfiguration.getProxyType(), shadowSocksConfiguration.getProxyPassword(), shadowSocksConfiguration.getEncrypt());
     }
 
     @Override

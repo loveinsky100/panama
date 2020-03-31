@@ -5,10 +5,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import org.leo.server.panama.vpn.configuration.ShadowSocksConfiguration;
 import org.leo.server.panama.vpn.constant.VPNConstant;
 import org.leo.server.panama.vpn.proxy.TCPProxy;
-import org.leo.server.panama.vpn.proxy.impl.AgentShadowSocksProxy;
-import org.leo.server.panama.vpn.proxy.impl.Redirect2ReverseShadowSocksProxy;
-import org.leo.server.panama.vpn.proxy.impl.ReverseShadowSocksProxy;
-import org.leo.server.panama.vpn.proxy.impl.ShadowSocksProxy;
+import org.leo.server.panama.vpn.proxy.impl.*;
 import org.leo.server.panama.vpn.reverse.core.ReverseCoreServer;
 import org.leo.server.panama.vpn.shadowsocks.ShadowsocksRequestResolver;
 import org.leo.server.panama.vpn.util.Callback;
@@ -38,8 +35,18 @@ public class ShadowSocksProxyFactory {
         }).start();
     }
 
+    public static TCPProxy createRePlayShadowSocksProxy(Channel channel, Callback callback, ShadowSocksConfiguration shadowSocksConfiguration) {
+        // 测试代理，测试用
+        return new RePlayShadowSocksProxy(
+                channel,
+                callback,
+                shadowSocksConfiguration,
+                eventLoopGroup,
+                requestResolver);
+    }
+
     public static TCPProxy createReverseShadowSocksProxy(Channel channel, Callback callback, ShadowSocksConfiguration shadowSocksConfiguration) {
-        // 反响代理TCP服务
+        // 反向代理TCP服务
         return new ReverseShadowSocksProxy(
                 channel,
                 callback,
@@ -49,7 +56,7 @@ public class ShadowSocksProxyFactory {
     }
 
     public static TCPProxy createRedirect2ReverseShadowSocksProxy(Channel channel, Callback callback, ShadowSocksConfiguration shadowSocksConfiguration) {
-        // 反响代理TCP服务
+        // 反向代理TCP服务
         return new Redirect2ReverseShadowSocksProxy(
                 channel,
                 callback,

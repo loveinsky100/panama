@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Panama",
+            "request": "launch",
+            "mainClass": "org.leo.server.panama.vpn.Panama",
+            "projectName": "vpn"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ConfigurationReader",
+            "request": "launch",
+            "mainClass": "org.leo.server.panama.vpn.configuration.ConfigurationReader",
+            "projectName": "vpn"
+        }
+    ]
+}

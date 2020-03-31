@@ -15,6 +15,12 @@ public class ShadowSocksConfiguration {
     private String mode;
 
     /**
+     * encrypt: 加密 raw: 不加密
+     * 加密信息： encrypt / raw
+     */
+    private String encrypt;
+
+    /**
      * 加密类型
      */
     private String type;
@@ -58,6 +64,18 @@ public class ShadowSocksConfiguration {
      * 反向代理服务器端口
      */
     private int reversePort;
+
+
+    public String getEncrypt() {
+        if (null == encrypt) {
+            return "encrypt";
+        }
+        return encrypt;
+    }
+
+    public void setEncrypt(String encrypt) {
+        this.encrypt = encrypt;
+    }
 
     public String getType() {
         if (null == type) {

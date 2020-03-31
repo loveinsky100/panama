@@ -12,6 +12,7 @@ import org.leo.server.panama.vpn.reverse.constant.ReverseConstants;
 import org.leo.server.panama.vpn.reverse.protocol.ReverseProtocol;
 import org.leo.server.panama.vpn.util.Callback;
 import org.leo.server.panama.vpn.util.LocalCacheFactory;
+import org.leo.server.panama.vpn.util.MD5;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * 反向代理服务端，实际上是作为客户端存在内网服务器中
- * 想代理服务器发起一条长连接，接收代码服务器的请求
- * 收到代理服务器请求后发起网络请求，然后回调给代理服务器
+ * 反向代理服务端，作为服务端存在外网服务器中
+ * 内网客户端连接到此端口，并维持一条稳定的连接
+ * 代理服务器请求后发起网络请求，然后回调给代理服务器
  * 由于复用一条连接，所有的请求带上tag标记，判断是否属于同一个请求
  * @author xuyangze
  * @date 2018/11/21 3:17 PM
@@ -36,6 +37,8 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Cache<Integer, Consumer<byte []>> tag2ConsumerMap = LocalCacheFactory.createCache(60 * 1000 * 5, 20000);
     private Cache<Integer, Callback> tag2ClosedMap = LocalCacheFactory.createCache(60 * 1000 * 5, 20000);
+
+    private ReverseProtocol.ReverseProtocolData lastUnCompleteReverseProtocolData;
 
     public ReverseCoreServer(int port) {
         super(port);
@@ -75,14 +78,15 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
 
     @Override
     public void doRequest(TCPRequest request) {
-        List<ReverseProtocol.ReverseProtocolData> reverseProtocolDatas = ReverseProtocol.decodeProtocol(request.getData());
+        List<ReverseProtocol.ReverseProtocolData> reverseProtocolDatas = ReverseProtocol.decodeProtocol(request.getData(), lastUnCompleteReverseProtocolData);
+        lastUnCompleteReverseProtocolData = null;
 
         if (null == reverseProtocolDatas || reverseProtocolDatas.size() == 0) {
             log.error("reverseProtocolDatas is empty, but data size is: " + request.getData().length);
             return;
         }
 
-        reverseProtocolDatas.forEach(reverseProtocolData -> this.doRequest(reverseProtocolData.getTag(), reverseProtocolData.getData()));
+        reverseProtocolDatas.forEach(reverseProtocolData -> this.doRequest(reverseProtocolData));
     }
 
     @Override
@@ -92,11 +96,19 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
             callback.call();
         }
 
+        lastUnCompleteReverseProtocolData = null;
         tag2ClosedMap.invalidateAll();
         tag2ConsumerMap.invalidateAll();
     }
 
-    private void doRequest(int tag, byte[] data) {
+    private void doRequest(ReverseProtocol.ReverseProtocolData reverseProtocolData) {
+        if (!reverseProtocolData.isComplete()) {
+            lastUnCompleteReverseProtocolData = reverseProtocolData;
+            return;
+        }
+
+        int tag = reverseProtocolData.getTag();
+        byte[] data = reverseProtocolData.getData();
         Consumer<byte []> consumer = tag2ConsumerMap.getIfPresent(tag);
         if (null != consumer) {
             if (data.length != 4) {
@@ -110,6 +122,8 @@ public class ReverseCoreServer extends TCPServer implements RequestHandler<TCPRe
                         tag2ClosedMap.invalidate(tag);
                         callback.call();
                     }
+                } else {
+                    consumer.accept(data);
                 }
             }
         }

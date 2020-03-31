@@ -42,8 +42,22 @@ public class ReverseProtocol {
      * @return
      */
     public static List<ReverseProtocolData> decodeProtocol(byte []content) {
+        return decodeProtocol(content, null);
+    }
+
+    public static List<ReverseProtocolData> decodeProtocol(byte []content, ReverseProtocolData lastReverseProtocolData) {
         List<ReverseProtocolData> reverseProtocolDatas = new ArrayList<>(2);
         int start = 0;
+
+        if (null != lastReverseProtocolData && !lastReverseProtocolData.isComplete()) {
+            // 剩余没有读取的数据，对于tcp拆包后可能存在这种问题
+            byte []data = lastReverseProtocolData.getData();
+            int leftSize = data.length - lastReverseProtocolData.getSize();
+
+            System.arraycopy(content, start, data, lastReverseProtocolData.getSize(), leftSize);
+            start += leftSize;
+        }
+
         while (start < content.length) {
             // 取出tag
             int tag = NumberUtils.byteArrayToInt(content, start);
@@ -53,15 +67,15 @@ public class ReverseProtocol {
 
             start += 4;
 
-            if (content.length < (start + size)) {
-                break;
-            }
-
+            int leftSize = content.length - start;
+            int realSize = leftSize > size ? size : leftSize;
             byte []data = new byte[size];
-            System.arraycopy(content, start, data, 0, size);
+            System.arraycopy(content, start, data, 0, realSize);
             ReverseProtocolData reverseProtocolData = new ReverseProtocolData();
             reverseProtocolData.setTag(tag);
             reverseProtocolData.setData(data);
+            reverseProtocolData.setSize(realSize);
+            reverseProtocolData.setComplete(size == realSize);
 
             reverseProtocolDatas.add(reverseProtocolData);
             start += size;
@@ -71,9 +85,25 @@ public class ReverseProtocol {
     }
 
     public static class ReverseProtocolData {
+        /**
+         * tag
+         */
         private int tag;
 
+        /**
+         * 实际数据
+         */
         private byte[] data;
+
+        /**
+         * 真实长度
+         */
+        private int size;
+
+        /**
+         * 是否完读取完成
+         */
+        private boolean complete;
 
         public int getTag() {
             return tag;
@@ -89,6 +119,22 @@ public class ReverseProtocol {
 
         public void setData(byte[] data) {
             this.data = data;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
+
+        public boolean isComplete() {
+            return complete;
+        }
+
+        public void setComplete(boolean complete) {
+            this.complete = complete;
         }
     }
 }

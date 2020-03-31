@@ -6,8 +6,11 @@ import org.leo.server.panama.core.connector.impl.TCPResponse;
 import org.leo.server.panama.util.NumberUtils;
 import org.leo.server.panama.vpn.reverse.constant.ReverseConstants;
 import org.leo.server.panama.vpn.reverse.core.ReverseCoreServer;
+import org.leo.server.panama.vpn.util.MD5;
+
 import java.net.InetSocketAddress;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 反向代理客户端，本质上是一个服务端
@@ -21,12 +24,13 @@ public class ReverseTCPClient implements Client {
     private ReverseCoreServer reverseCoreServer;
     private ClientResponseDelegate<TCPResponse> delegate;
     private volatile boolean closed = true;
-    private static int tag = 10000;
+    private static AtomicInteger TAG = new AtomicInteger(10000);
+    private int tag = 0;
 
     public ReverseTCPClient(ClientResponseDelegate<TCPResponse> delegate, ReverseCoreServer reverseCoreServer) {
         this.reverseCoreServer = reverseCoreServer;
         this.delegate = delegate;
-        tag ++;
+        this.tag = TAG.incrementAndGet();
     }
 
     @Override
@@ -38,11 +42,10 @@ public class ReverseTCPClient implements Client {
     @Override
     public void send(byte[] data, int timeout) {
         if (isClose()) {
-            System.out.println("send when closed for tag: " + tag);
             return;
         }
 
-        reverseCoreServer.send2Client(tag, data, responseData -> {
+        reverseCoreServer.send2Client(this.tag, data, responseData -> {
             TCPResponse response = new TCPResponse(responseData);
             delegate.doPerResponse(ReverseTCPClient.this, response);
         }, () -> this.close());
@@ -66,6 +69,6 @@ public class ReverseTCPClient implements Client {
 
         this.closed = true;
         delegate.onConnectClosed(ReverseTCPClient.this);
-        reverseCoreServer.send2Client(tag, NumberUtils.intToByteArray(ReverseConstants.CLOSE_MAGIC), null, null);
+        reverseCoreServer.send2Client(this.tag, NumberUtils.intToByteArray(ReverseConstants.CLOSE_MAGIC), null, null);
     }
 }

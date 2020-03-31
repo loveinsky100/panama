@@ -34,15 +34,15 @@ public class Redirect2ReverseShadowSocksProxy extends AgentShadowSocksProxy {
         this.reverseCoreServer = reverseCoreServer;
     }
 
-    @Override
-    public boolean shouldDoPerResponse() {
-        return false;
-    }
-
-    @Override
-    public boolean shouldDoCompleteResponse() {
-        return true;
-    }
+//    @Override
+//    public boolean shouldDoPerResponse() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean shouldDoCompleteResponse() {
+//        return true;
+//    }
 
     @Override
     public void doProxy(byte []data) {

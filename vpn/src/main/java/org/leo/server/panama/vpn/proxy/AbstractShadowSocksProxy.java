@@ -39,7 +39,7 @@ public abstract class AbstractShadowSocksProxy implements ClientResponseDelegate
 
     public AbstractShadowSocksProxy(Channel clientChannel, Callback finish, ShadowSocksConfiguration shadowSocksConfiguration, NioEventLoopGroup eventLoopGroup, ShadowsocksRequestResolver requestResolver) {
         this.clientChannel = clientChannel;
-        wrapper = WrapperFactory.getInstance(shadowSocksConfiguration.getType(), shadowSocksConfiguration.getPassword(), "encrypt");
+        wrapper = WrapperFactory.getInstance(shadowSocksConfiguration.getType(), shadowSocksConfiguration.getPassword(), shadowSocksConfiguration.getEncrypt());
         this.finish = finish;
         this.eventLoopGroup = eventLoopGroup;
         this.requestResolver = requestResolver;
