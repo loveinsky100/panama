@@ -12,7 +12,7 @@
     <artifactId>spring</artifactId>
 
     <properties>
-        <panama.spring.version>4.3.11.RELEASE</panama.spring.version>
+        <panama.spring.version>5.2.5.RELEASE</panama.spring.version>
     </properties>
 
     <dependencyManagement>
